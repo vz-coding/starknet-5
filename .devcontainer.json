@@ -1,0 +1,20 @@
+{
+  "name": "Starknet Basecamp",
+  "image": "btwiuse/arch:cairo",
+  "containerEnv": {
+    "DOCKER_API_VERSION": "1.43"
+  },
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "runArgs": ["--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
+  "remoteUser": "root",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "StarkWare.cairo1",
+        "tamasfe.even-better-toml"
+      ]
+    }
+  }
+}
