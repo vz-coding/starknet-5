@@ -1,10 +1,14 @@
-use counter::counter::{ICounterDispatcher, ICounterDispatcherTrait};
-use counter::hello_starknet::{
-    IHelloStarknetDispatcher, IHelloStarknetDispatcherTrait, IHelloStarknetSafeDispatcher,
-    IHelloStarknetSafeDispatcherTrait,
-};
-use snforge_std::{ContractClassTrait, DeclareResultTrait, declare};
 use starknet::ContractAddress;
+
+use snforge_std::{declare, ContractClassTrait, DeclareResultTrait};
+
+use counter::hello_starknet::IHelloStarknetSafeDispatcher;
+use counter::hello_starknet::IHelloStarknetSafeDispatcherTrait;
+use counter::hello_starknet::IHelloStarknetDispatcher;
+use counter::hello_starknet::IHelloStarknetDispatcherTrait;
+
+use counter::counter::ICounterDispatcher;
+use counter::counter::ICounterDispatcherTrait;
 
 fn deploy_contract(name: ByteArray) -> ContractAddress {
     let contract = declare(name).unwrap().contract_class();
@@ -12,10 +16,10 @@ fn deploy_contract(name: ByteArray) -> ContractAddress {
     contract_address
 }
 
-fn deploy_counter(initial_value: u32) -> ContractAddress {
+fn deploy_counter(initial_number: u32) -> ContractAddress {
     let contract = declare("Counter").unwrap().contract_class();
-    let constructor_calldata = array![initial_value.into()];
-    let (contract_address, _) = contract.deploy(@constructor_calldata).unwrap();
+    let calldata = array![initial_number.into()];
+    let (contract_address, _) = contract.deploy(@calldata).unwrap();
     contract_address
 }
 
@@ -26,7 +30,6 @@ fn test_counter() {
     let dispatcher = ICounterDispatcher { contract_address };
 
     let number = dispatcher.get();
-
     assert(number == 42, 'Invalid number');
 
     dispatcher.inc();
@@ -63,6 +66,6 @@ fn test_cannot_increase_balance_with_zero_value() {
         Result::Ok(_) => core::panic_with_felt252('Should have panicked'),
         Result::Err(panic_data) => {
             assert(*panic_data.at(0) == 'Amount cannot be 0', *panic_data.at(0));
-        },
+        }
     };
 }

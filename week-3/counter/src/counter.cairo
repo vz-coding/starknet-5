@@ -6,8 +6,9 @@ pub trait ICounter<TContractState> {
 
 #[starknet::contract]
 mod Counter {
-    use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
     use super::ICounter;
+    use starknet::storage::StoragePointerReadAccess;
+    use starknet::storage::StoragePointerWriteAccess;
 
     #[storage]
     struct Storage {
@@ -15,8 +16,8 @@ mod Counter {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, initial_value: u32) {
-        self.number.write(initial_value);
+    fn constructor(ref self: ContractState, initial_number: u32) {
+        self.number.write(initial_number);
     }
 
     #[event]
@@ -35,9 +36,11 @@ mod Counter {
         fn get(self: @ContractState) -> u32 {
             self.number.read()
         }
+
         fn inc(ref self: ContractState) {
             let value = self.get() + 1;
             self.number.write(value);
+
             let event = Event::ValueChanged(ValueChanged { value });
             self.emit(event);
         }
